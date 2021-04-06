@@ -23,39 +23,46 @@ def himpunan(m):
     return buathim
 
 
-def rules2(m, var1, var2):
-    result = []
-    for i in range(0, len(var1)):
-        for j in range(0, len(var2)):
-            result.append([var1[i], var2[j]])
-    return result
+def rules(var):
+    isi = []
+    sl = []
+    a = var[4]
+    isi.append(a)
+    for m in range(len(isi)):
+        for l in range(len(isi[m])):
+            b = isi[m][l][0]
+            sl.append(b)
+    return sl
 
 
-def rules3(m, var1, var2, var3):
-    result = []
-    for i in range(0, len(var1)):
-        for j in range(0, len(var2)):
-            for k in range(0, len(var3)):
-                result.append([var1[i], var2[j], var3[k]])
-    return result
+def nilaimin(var):
+    isi = []
+    sl = []
+    a = var[4]
+    isi.append(a)
+    for m in range(len(isi)):
+        for l in range(len(isi[m])):
+            b = isi[m][l][1]
+            sl.append(b)
+    return sl
 
 
-def rules4(m, var1, var2, var3, var4):
-    result = []
-    for i in range(0, len(var1)):
-        for j in range(0, len(var2)):
-            for k in range(0, len(var3)):
-                for l in range(0, len(var4)):
-                    result.append([var1[i], var2[j], var3[k], var4[l]])
-    return result
+def nilaimax(var):
+    isi = []
+    sl = []
+    a = var[4]
+    isi.append(a)
+    for m in range(len(isi)):
+        for l in range(len(isi[m])):
+            b = isi[m][l][2]
+            sl.append(b)
+    return sl
 
 
 ex = st.beta_expander('Init Variable')
 ex.write(
     'Masukkan variabel-variabel yang akan digunakan sebagai input/output pada sistem')
 n = ex.number_input('Masukkan berapa banyak variabel : ', 0, 200, 1)
-r = []
-result = []
 
 buatvar = []
 for i in range(n):
@@ -67,7 +74,44 @@ for i in range(n):
     m = c4.number_input('Jumlah himpunan : ', 0, 100, 0, key=i)
     buatvar.append([tipe, var, satuan, m, himpunan(m)])
 
-# st.write(r)
+# buat rules
 ex2 = st.beta_expander('Init Rules')
 df = pd.DataFrame(buatvar)
 ex2.table(df)
+jmlrule = ex2.number_input('Masukkan jumlah rule : ', 0, 200, 1)
+aturan = []
+for i in range(jmlrule):
+    cos = ex2.beta_columns(len(buatvar)+1)
+    for k in range(len(buatvar)):
+        c = rules(buatvar[k])
+        if k == (len(buatvar) - 1):
+            rule = cos[k].selectbox(
+                'Maka ' + str(buatvar[k][1])+' :', c, key=k+i)
+        elif(k == 0):
+            rule = cos[k].selectbox('R' + str(i+1) + ' => Jika ' +
+                                    str(buatvar[k][1])+' :', c, key=k+i)
+        else:
+            rule = cos[k].selectbox(
+                'Dan ' + str(buatvar[k][1])+' :', c, key=k+i)
+        aturan.append(rule)
+
+
+# buat fuzzifikasi
+ex3 = st.beta_expander('Fuzzifikasi')
+ex3.write('Masukkan nilai yang akan diujikan kepada setiap variabel :')
+col = ex3.beta_columns(len(buatvar))
+buatfuzz = []
+for i in range(len(buatvar)-1):
+    # minnya = nilaimin(buatvar[i])
+    # maxnya = nilaimax(buatvar[i])
+    nilai = col[i].number_input(str(buatvar[i][1])+' :', 0, 100000, key=i+1)
+    buatfuzz.append(nilai)
+ex3.write(buatfuzz)
+
+for j in range(len(buatvar)):
+    ex3.write(nilaimin(buatvar[j]))
+    if buatfuzz[j] in range(buatvar[j][4][j][1], buatvar[j][4][j][2]):
+        ex3.write(buatvar[j][4][k][0])
+    else:
+        j += 1
+        ex3.write('Out of index')
