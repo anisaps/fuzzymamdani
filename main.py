@@ -35,6 +35,20 @@ def rules(var):
     return sl
 
 
+def rangenya(var):
+    isi = []
+    sl = []
+    a = var[4]
+    isi.append(a)
+    for m in range(len(isi)):
+        for l in range(len(isi[m])):
+            aw = isi[m][l][0]
+            b = isi[m][l][1]
+            c = isi[m][l][2]
+            sl.append([aw, b, c])
+    return sl
+
+
 def nilaimin(var):
     isi = []
     sl = []
@@ -102,16 +116,22 @@ ex3.write('Masukkan nilai yang akan diujikan kepada setiap variabel :')
 col = ex3.beta_columns(len(buatvar))
 buatfuzz = []
 for i in range(len(buatvar)-1):
-    # minnya = nilaimin(buatvar[i])
-    # maxnya = nilaimax(buatvar[i])
     nilai = col[i].number_input(str(buatvar[i][1])+' :', 0, 100000, key=i+1)
     buatfuzz.append(nilai)
 ex3.write(buatfuzz)
 
 for j in range(len(buatvar)):
-    ex3.write(nilaimin(buatvar[j]))
-    if buatfuzz[j] in range(buatvar[j][4][j][1], buatvar[j][4][j][2]):
-        ex3.write(buatvar[j][4][k][0])
-    else:
-        j += 1
-        ex3.write('Out of index')
+    ranges = rangenya(buatvar[j])
+    for k in range(len(ranges)):
+        # ex3.write(ranges)
+        if buatfuzz[j] in range(ranges[k][1], ranges[k][2]):
+            ex3.write('Terpilih : '+str(ranges[k][0]))
+            nilaifuzzymin = (ranges[k][2] - buatfuzz[j]) / \
+                (ranges[k][2] - ranges[k][1])
+            nilaifuzzymax = (buatfuzz[j] - ranges[k][1]) / \
+                (ranges[k][2] - ranges[k][1])
+            ex3.write('uMinimum : '+str(nilaifuzzymin))
+            ex3.write('uMaximum : '+str(nilaifuzzymax))
+
+        else:
+            continue
