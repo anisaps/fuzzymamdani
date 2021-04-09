@@ -148,5 +148,5 @@ for j in range(len(buatvar)):
 
         else:
             continue
-st.markdown('<style>body{background-color: #fbc2eb;}</style>',unsafe_allow_html=True)
-st.markdown("""<style>sidebar .sidebar-content {  background-color: #fbc2eb !important;}</style>""", unsafe_allow_html=True)
+st.markdown('<style>body{background-color: #AADBE1;}</style>',unsafe_allow_html=True)
+
