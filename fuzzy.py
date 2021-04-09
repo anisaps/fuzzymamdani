@@ -1,8 +1,21 @@
 import streamlit as st
 import pandas as pd
 
-st.title('FUZZY MAMDANI')
-st.subheader('created by : 152017114 Anisa Putri Setyaningrum')
+
+option = st.sidebar.selectbox(
+    'Silakan pilih:',
+    ('Home','Fuzzy Mamdani','Teori Fuzzy Logic')
+)
+
+if option == 'Home' or option == '':
+    st.title(""" UTS Pemrograman Simulasi""")
+    st.write("""# SIMULASI FUZZY MAMDANI""")
+    st.subheader(""" created by :""")
+    st.subheader(""" 1. 152017084 Cindy Mawar Kasih""")
+    st.subheader(""" 2. 152017114 Anisa Putri Setyaningrum""")
+
+elif option == 'Fuzzy Mamdani':
+    st.write("""## Fuzzy Mamdani""") #menampilkan judul halaman dataframe
 
 
 @st.cache(persist=True)
@@ -135,3 +148,5 @@ for j in range(len(buatvar)):
 
         else:
             continue
+st.markdown('<style>body{background-color: #fbc2eb;}</style>',unsafe_allow_html=True)
+st.markdown("""<style>sidebar .sidebar-content {  background-color: #fbc2eb !important;}</style>""", unsafe_allow_html=True)
