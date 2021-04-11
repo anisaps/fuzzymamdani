@@ -1,4 +1,6 @@
 # All Function
+import random
+
 
 def himpunan(m, ex, i):
     buathim = []
@@ -10,6 +12,17 @@ def himpunan(m, ex, i):
         maxi = cl3.number_input('Maximum', 0, 10000,
                                 key='var'+str(i)+'min' + str(m+j))
         buathim.append([him, mini, maxi])
+    return buathim
+
+
+def himpunan2(m, ex, i):
+    buathim = []
+    for j in range(m):
+        cl1, cl2 = ex.beta_columns(2)
+        him = cl1.text_input('Nama Himpunan ke-' + str(j+1), key=i+j)
+        nilai = cl2.number_input('Nilai ', 0, 10000,
+                                 key='var'+str(i)+'min' + str(m+j))
+        buathim.append([him, nilai])
     return buathim
 
 
@@ -83,3 +96,22 @@ def splitter(a, b):
         arr.append(a[i:index])
         i += index
     return arr
+
+
+def randnum(n):
+    i = 1
+    r = 0
+    new_list = []
+    while i <= n:
+        na = random.random()
+        r = round(na, 3)
+        i += 1
+        new_list.append(r)
+    return new_list
+
+
+def jumlah(arr):
+    hasil = 0
+    for i in range(0, len(arr)):
+        hasil = hasil + arr[i]
+    return str(hasil)

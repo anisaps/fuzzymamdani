@@ -10,7 +10,7 @@ def abc():
 
 option = st.sidebar.selectbox(
     'Silakan pilih:',
-    ('Home', 'Teori Fuzzy Logic', 'Fuzzy Mamdani')
+    ('Home', 'Teori Fuzzy Logic', 'Fuzzy Mamdani 2 Input', 'Fuzzy Mamdani Continue')
 )
 
 if option == 'Home' or option == '':
@@ -20,8 +20,161 @@ if option == 'Home' or option == '':
     st.subheader(""" 1. 152017084 Cindy Mawar Kasih""")
     st.subheader(""" 2. 152017114 Anisa Putri Setyaningrum""")
 
-elif option == 'Fuzzy Mamdani':
-    st.write("""## Fuzzy Mamdani""")  # menampilkan judul halaman dataframe
+elif option == 'Fuzzy Mamdani 2 Input':
+    st.write("""## Fuzzy Mamdani 2 Input""")
+    try:
+        ex = st.beta_expander('Init Variable')
+        buatvar = []
+        n = ex.number_input('Masukkan berapa banyak variabel : ', 0, 200, 1)
+
+        for i in range(n):
+            ex.info('Variabel ke-' + str(i+1))
+            c1, c2, c3, c4 = ex.beta_columns(4)
+            tipe = c1.selectbox('Tipe variabel', ['INPUT', 'OUTPUT'], key=i)
+            var = c2.text_input('Nama Variabel : ', key=i)
+            satuan = c3.text_input('Satuan : ', key=i)
+            m = c4.number_input('Jumlah himpunan : ', 0, 100, 0, key=i)
+            buatvar.append([tipe, var, satuan, m, ff.himpunan2(m, ex, i)])
+        df = pd.DataFrame(buatvar)
+        ex.table(df)
+
+        buatrule = []
+        ex2 = st.beta_expander('Init Rules')
+        # try:
+        for i in range(4):
+            co1, co2, co3 = ex2.beta_columns(3)
+            r11 = co1.selectbox(
+                'Jika ' + str(buatvar[0][1]), [buatvar[0][4][0][0], buatvar[0][4][1][0]], key=1+i)
+            r12 = co2.selectbox(
+                'Dan ' + str(buatvar[1][1]), [buatvar[1][4][0][0], buatvar[1][4][1][0]], key=2+i)
+            r13 = co3.selectbox(
+                'Maka ' + str(buatvar[2][1]), [buatvar[2][4][0][0], buatvar[2][4][1][0]], key=3+i)
+            buatrule.append([r11, r12, r13])
+        ex2.write(buatrule)
+
+        ex3 = st.beta_expander('Fuzzifikasi')
+        ex3.write('Masukkan nilai yang akan diujikan kepada setiap variabel :')
+        col = ex3.beta_columns(len(buatvar))
+        buatfuzz = []
+
+        for i in range((len(buatvar))-1):
+            fuzz = col[i].number_input(
+                str(buatvar[i][1])+' :', 0, 100000, key=i+1)
+            buatfuzz.append(fuzz)
+        ex3.write(buatfuzz)
+
+        hasilfuzz = []
+        for i in range(len(buatfuzz)):
+            if(buatvar[i][4][1][1] > buatvar[i][4][0][1]):
+                namamin = buatvar[i][4][0][0]
+                namamax = buatvar[i][4][1][0]
+                nilaifuzzymin = (buatvar[i][4][1][1] - buatfuzz[i]) / \
+                    (buatvar[i][4][1][1] - buatvar[i][4][0][1])
+                nilaifuzzymax = (buatfuzz[i] - buatvar[i][4][0][1]) / \
+                    (buatvar[i][4][1][1] - buatvar[i][4][0][1])
+            else:
+                namamin = buatvar[i][4][1][0]
+                namamax = buatvar[i][4][0][0]
+                nilaifuzzymin = (buatvar[i][4][0][1] - buatfuzz[i]) / \
+                    (buatvar[i][4][0][1] - buatvar[i][4][1][1])
+                nilaifuzzymax = (buatfuzz[i] - buatvar[i][4][1][1]) / \
+                    (buatvar[i][4][0][1] - buatvar[i][4][1][1])
+            hasilfuzz.append([namamin, nilaifuzzymin, namamax, nilaifuzzymax])
+        ex3.write(hasilfuzz)
+
+        ex4 = st.beta_expander('Implikasi')
+        ex4.write(
+            'Mencari nilai minimum dari kedua variabel berdasarkan rule yang sudah dibuat ')
+        rules = pd.DataFrame(buatrule)
+        ex4.table(rules)
+
+        ex4.write(
+            'Variabel ke-1')
+        # var1
+        implivar1 = []
+        for i in range(len(buatrule)):
+            if buatrule[i][0] == hasilfuzz[0][0]:
+                im = hasilfuzz[0][1]
+            else:
+                im = hasilfuzz[0][3]
+            implivar1.append([im, buatrule[i][2]])
+        ex4.write(implivar1)
+        datavar1 = pd.DataFrame(implivar1)
+        ex4.table(datavar1)
+
+        ex4.write(
+            'Variabel ke-2')
+        # var2
+        implivar2 = []
+        for j in range(len(buatrule)):
+            if buatrule[j][1] == hasilfuzz[1][0]:
+                im = hasilfuzz[1][1]
+            else:
+                im = hasilfuzz[1][3]
+            implivar2.append([im, buatrule[j][2]])
+        # ex4.write(implivar2)
+        datavar2 = pd.DataFrame(implivar2)
+        ex4.table(datavar2)
+
+        # hasil implikasi
+        ex4.write(
+            'Hasil Implikasi')
+        hasilimpli = []
+        for k in range(len(implivar1)):
+            impli = min(implivar1[k][0], implivar2[k][0])
+            hasilimpli.append([impli, implivar1[k][1]])
+
+        # ex4.write(hasilimpli)
+        hasilnya = pd.DataFrame(hasilimpli)
+        ex4.table(hasilnya)
+
+        ex5 = st.beta_expander('Defuzzifikasi')
+        ex5.write(
+            'Mencari nilai terbesar dari keputusan rule berdasarkan nilai implikasi yang sudah di dapat')
+
+        max1 = []
+        max2 = []
+        for i in range(len(hasilimpli)):
+            if(buatvar[2][4][0][0] == hasilimpli[i][1]):
+                buatmax = hasilimpli[i][0]
+            else:
+                buatmax = 0
+            max1.append(buatmax)
+        for i in range(len(hasilimpli)):
+            if(buatvar[2][4][1][0] == hasilimpli[i][1]):
+                buatmax = hasilimpli[i][0]
+            else:
+                buatmax = 0
+            max2.append(buatmax)
+
+        ex5.write('1. '+str(buatvar[2][4][0][0])+' : '+str(max(max1)))
+        ex5.write('2. '+str(buatvar[2][4][1][0]) + ' : '+str(max(max2)))
+
+        b = ex5.number_input(
+            'Masukkan berapa banyak random number : ', 5, 200, 5)
+        randvar1 = ff.jumlah(ff.randnum(b))
+        randvar2 = ff.jumlah(ff.randnum(b))
+        ex5.write(randvar1)
+        ex5.write(randvar2)
+        # ex5.write(pd.Dataframe({
+        #     str(buatvar[2][4][0][0]): randvar1,
+        #     str(buatvar[2][4][1][0]): randvar2,
+        # }))
+        defuzz = ((randvar1*max(max1))+(randvar2*max(max2))) / \
+            ((max(max1)*len(ff.randnum(b)))+(max(max2)*len(ff.randnum(b))))
+        ex5.write(
+            'Nilai Defuzzifikasi : '+str(defuzz))
+        ex5.write('Jadi '+str(buatvar[2][1]) +
+                  ' yang diperlukan adalah sebesar '+str(defuzz)+' '+buatvar[2][2])
+
+        # except:
+        #     ex2.write('eror')
+
+    except:
+        st.write('Something Wrong !')
+
+elif option == 'Fuzzy Mamdani Continue':
+    st.write("""## Fuzzy Mamdani Continue (Masih tahap pembangunan)""")  # menampilkan judul halaman dataframe
     ex = st.beta_expander('Init Variable')
     ex.write(
         'Masukkan variabel-variabel yang akan digunakan sebagai input/output pada sistem')
@@ -88,17 +241,22 @@ elif option == 'Fuzzy Mamdani':
                 nilaifuzzy.append([ranges[k][0], nilaifuzzymin, nilaifuzzymax])
             else:
                 continue
-        ex3.write(j)
 
     ex3.write(nilaifuzzy)
 
     # buat implikasi
-    # ex4 = st.beta_expander('Implikasi')
-    # ex4.write(nilaifuzzy)
-    # buatimpli = []
-    # for i in range(len(nilaifuzzy)):
-    #     buatimpli.append(min(nilaifuzzy[i][1], nilaifuzzy[i][2]))
-    # ex4.write(buatimpli)
+    ex4 = st.beta_expander('Implikasi')
+    ex4.write(nilaifuzzy)
+    buatimpli = []
+
+    for i in range(len(nilaifuzzy)):
+        for p in range(len(aturan)):
+            if(aturan[p] == nilaifuzzy[i][0]):
+                x = nilaifuzzy[i][2]
+            else:
+                x = nilaifuzzy[i][1]
+            buatimpli.append(x)
+    ex4.write(buatimpli)
 
 elif option == 'Teori Fuzzy Logic':
     st.title("""Teori Fuzzy Logic""")
