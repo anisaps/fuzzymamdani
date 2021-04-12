@@ -168,9 +168,6 @@ elif option == 'Fuzzy Mamdani 2 Input':
             rand = ff.randnum(b1, buatvar[2][4][1][1], buatvar[2][4][0][1])
             rand2 = ff.randnum(b2, buatvar[2][4][1][1], buatvar[2][4][0][1])
 
-        ex5.write(randvar1)
-        ex5.write(randvar2)
-
         data = {str(buatvar[2][4][0][0]): rand,
                 str(buatvar[2][4][1][0]): rand2, }
 
