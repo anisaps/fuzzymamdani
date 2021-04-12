@@ -98,12 +98,24 @@ def splitter(a, b):
     return arr
 
 
-def randnum(n):
+def randnum(n, mini, maxi):
     i = 1
     r = 0
     new_list = []
     while i <= n:
-        na = random.random()
+        na = random.randrange(mini, maxi)
+        r = round(na, 3)
+        i += 1
+        new_list.append(r)
+    return new_list
+
+
+def randnum2(n, mini, maxi):
+    i = 1
+    r = 0
+    new_list = []
+    while i <= n:
+        na = random.randrange(mini, maxi)
         r = round(na, 3)
         i += 1
         new_list.append(r)
@@ -114,4 +126,4 @@ def jumlah(arr):
     hasil = 0
     for i in range(0, len(arr)):
         hasil = hasil + arr[i]
-    return str(hasil)
+    return hasil

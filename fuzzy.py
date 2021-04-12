@@ -38,6 +38,12 @@ elif option == 'Fuzzy Mamdani 2 Input':
         df = pd.DataFrame(buatvar)
         ex.table(df)
 
+        # if(buatvar[0][4][1][1] > buatvar[0][4][0][1]):
+        # xaxis = [1, 0]
+        # yaxis = [buatvar[0][4][1][1], buatvar[0][4][0][1]]
+        # chart_data = pd.DataFrame([xaxis, yaxis], columns=[['a', 'b']])
+        # ex.area_chart(chart_data)
+
         buatrule = []
         ex2 = st.beta_expander('Init Rules')
         # try:
@@ -98,7 +104,6 @@ elif option == 'Fuzzy Mamdani 2 Input':
             else:
                 im = hasilfuzz[0][3]
             implivar1.append([im, buatrule[i][2]])
-        ex4.write(implivar1)
         datavar1 = pd.DataFrame(implivar1)
         ex4.table(datavar1)
 
@@ -150,28 +155,41 @@ elif option == 'Fuzzy Mamdani 2 Input':
         ex5.write('1. '+str(buatvar[2][4][0][0])+' : '+str(max(max1)))
         ex5.write('2. '+str(buatvar[2][4][1][0]) + ' : '+str(max(max2)))
 
-        b = ex5.number_input(
-            'Masukkan berapa banyak random number : ', 5, 200, 5)
-        randvar1 = ff.jumlah(ff.randnum(b))
-        randvar2 = ff.jumlah(ff.randnum(b))
+        col1, col2 = ex5.beta_columns(2)
+        b1 = col1.number_input(
+            'Masukkan berapa banyak random number (Var 1) : ', 5, 200, 5)
+        b2 = col2.number_input(
+            'Masukkan berapa banyak random number (Var 2) : ', 5, 200, 5)
+
+        if(buatvar[2][4][1][1] > buatvar[2][4][0][1]):
+            rand = ff.randnum(b1, buatvar[2][4][0][1], buatvar[2][4][1][1])
+            rand2 = ff.randnum(b2, buatvar[2][4][0][1], buatvar[2][4][1][1])
+        else:
+            rand = ff.randnum(b1, buatvar[2][4][1][1], buatvar[2][4][0][1])
+            rand2 = ff.randnum(b2, buatvar[2][4][1][1], buatvar[2][4][0][1])
+
         ex5.write(randvar1)
         ex5.write(randvar2)
-        # ex5.write(pd.Dataframe({
-        #     str(buatvar[2][4][0][0]): randvar1,
-        #     str(buatvar[2][4][1][0]): randvar2,
-        # }))
-        defuzz = ((randvar1*max(max1))+(randvar2*max(max2))) / \
-            ((max(max1)*len(ff.randnum(b)))+(max(max2)*len(ff.randnum(b))))
+
+        data = {str(buatvar[2][4][0][0]): rand,
+                str(buatvar[2][4][1][0]): rand2, }
+
+        datadf = pd.DataFrame(
+            data, columns=[str(buatvar[2][4][0][0]), str(buatvar[2][4][1][0])])
+        ex5.write(datadf)
+        maxi1 = max(max1)
+        maxi2 = max(max2)
+
+        defuzz = ((randvar1*maxi1))+(randvar2*(maxi2)) / \
+            ((maxi1*len(rand))+(maxi2*len(rand2)))
         ex5.write(
             'Nilai Defuzzifikasi : '+str(defuzz))
         ex5.write('Jadi '+str(buatvar[2][1]) +
                   ' yang diperlukan adalah sebesar '+str(defuzz)+' '+buatvar[2][2])
 
-        # except:
-        #     ex2.write('eror')
-
     except:
-        st.write('Something Wrong !')
+        ex2.write('')
+
 
 elif option == 'Fuzzy Mamdani Continue':
     st.write("""## Fuzzy Mamdani Continue (Masih tahap pembangunan)""")  # menampilkan judul halaman dataframe
