@@ -12,7 +12,7 @@ def abc():
 option = st.sidebar.selectbox(
     'Silakan pilih:',
     ('Home', 'Teori Fuzzy Logic', 'Fuzzy Mamdani 2 Input',
-     'Fuzzy Mamdani Continue', 'Fuzzy Mamdani (File)')
+     'Fuzzy Mamdani (File)', 'Fuzzy Mamdani Continue')
 )
 
 if option == 'Home' or option == '':
@@ -39,12 +39,6 @@ elif option == 'Fuzzy Mamdani 2 Input':
             buatvar.append([tipe, var, satuan, m, ff.himpunan2(m, ex, i)])
         df = pd.DataFrame(buatvar)
         ex.table(df)
-
-        # if(buatvar[0][4][1][1] > buatvar[0][4][0][1]):
-        # xaxis = [1, 0]
-        # yaxis = [buatvar[0][4][1][1], buatvar[0][4][0][1]]
-        # chart_data = pd.DataFrame([xaxis, yaxis], columns=[['a', 'b']])
-        # ex.area_chart(chart_data)
 
         buatrule = []
         ex2 = st.beta_expander('Init Rules')
@@ -89,6 +83,15 @@ elif option == 'Fuzzy Mamdani 2 Input':
                     (buatvar[i][4][0][1] - buatvar[i][4][1][1])
             hasilfuzz.append([namamin, nilaifuzzymin, namamax, nilaifuzzymax])
         ex3.write(hasilfuzz)
+        ex3.write('Hasil Fuzzyfikasi')
+        co1, co2 = ex3.beta_columns(2)
+        co1.info('Variabel ke-1')
+        co1.info(str(hasilfuzz[0][0]) + ' : '+str(hasilfuzz[0][1]))
+        co1.info(str(hasilfuzz[0][2]) + ' : '+str(hasilfuzz[0][3]))
+
+        co2.info('Variabel ke-2')
+        co2.info(str(hasilfuzz[1][0]) + ' :'+str(hasilfuzz[1][1]))
+        co2.info(str(hasilfuzz[1][2]) + ' :'+str(hasilfuzz[1][3]))
 
         ex4 = st.beta_expander('Implikasi')
         ex4.write(

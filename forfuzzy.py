@@ -135,14 +135,3 @@ def jumlah(arr):
 def exploredata(data):
     df = pd.read_csv(os.path.join(data))
     return df
-
-
-def get_table_download_link(df):
-    """Generates a link allowing the data in a given panda dataframe to be downloaded
-    in:  dataframe
-    out: href string
-    """
-    csv = df.to_csv(index=False)
-    # some strings <-> bytes conversions necessary here
-    b64 = base64.b64encode(csv.encode()).decode()
-    href = f'<a href="data:file/csv;base64,{b64}">Download csv file</a>'
