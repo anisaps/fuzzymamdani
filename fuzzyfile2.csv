@@ -1,0 +1,5 @@
+tipe,namavar,satuan,himpunanvar1,himpunanvar2,himpunanvar3,r1,r2,r3,r4,input
+INPUT,Permintaan,kemasan,turun,sedikit,berkurang,turun,turun,naik,naik,4000
+INPUT,Persediaan,kemasan,1000,100,2000,banyak,sedikit,banyak,sedikit,300
+OUTPUT,Produksi,kemasan,naik,banyak,bertambah,berkurang,berkurang,bertambah,bertambah,
+,,,5000,600,7000,,,,,

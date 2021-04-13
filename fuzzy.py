@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import forfuzzy as ff
+import os
 
 
 @st.cache(persist=True)
@@ -10,7 +11,8 @@ def abc():
 
 option = st.sidebar.selectbox(
     'Silakan pilih:',
-    ('Home', 'Teori Fuzzy Logic', 'Fuzzy Mamdani 2 Input', 'Fuzzy Mamdani Continue')
+    ('Home', 'Teori Fuzzy Logic', 'Fuzzy Mamdani 2 Input',
+     'Fuzzy Mamdani Continue', 'Fuzzy Mamdani (File)')
 )
 
 if option == 'Home' or option == '':
@@ -50,7 +52,7 @@ elif option == 'Fuzzy Mamdani 2 Input':
         for i in range(4):
             co1, co2, co3 = ex2.beta_columns(3)
             r11 = co1.selectbox(
-                'Jika ' + str(buatvar[0][1]), [buatvar[0][4][0][0], buatvar[0][4][1][0]], key=1+i)
+                '[R'+str(i+1)+'] Jika ' + str(buatvar[0][1]), [buatvar[0][4][0][0], buatvar[0][4][1][0]], key=1+i)
             r12 = co2.selectbox(
                 'Dan ' + str(buatvar[1][1]), [buatvar[1][4][0][0], buatvar[1][4][1][0]], key=2+i)
             r13 = co3.selectbox(
@@ -107,8 +109,7 @@ elif option == 'Fuzzy Mamdani 2 Input':
         datavar1 = pd.DataFrame(implivar1)
         ex4.table(datavar1)
 
-        ex4.write(
-            'Variabel ke-2')
+        ex4.write('Variabel ke-2')
         # var2
         implivar2 = []
         for j in range(len(buatrule)):
@@ -173,16 +174,19 @@ elif option == 'Fuzzy Mamdani 2 Input':
 
         datadf = pd.DataFrame(
             data, columns=[str(buatvar[2][4][0][0]), str(buatvar[2][4][1][0])])
+
         ex5.write(datadf)
         maxi1 = max(max1)
         maxi2 = max(max2)
+        randvar1 = ff.jumlah(rand)
+        randvar2 = ff.jumlah(rand2)
 
-        defuzz = ((randvar1*maxi1))+(randvar2*(maxi2)) / \
-            ((maxi1*len(rand))+(maxi2*len(rand2)))
+        defuzz = round(((randvar1*maxi1)+(randvar2*maxi2)) /
+                       ((maxi1*b1)+(maxi2*b2)), 3)
         ex5.write(
             'Nilai Defuzzifikasi : '+str(defuzz))
         ex5.write('Jadi '+str(buatvar[2][1]) +
-                  ' yang diperlukan adalah sebesar '+str(defuzz)+' '+buatvar[2][2])
+                  ' yang diperlukan adalah sebesar '+str(round(defuzz))+' '+buatvar[2][2])
 
     except:
         ex2.write('')
@@ -346,5 +350,156 @@ dan Defuzifikasi.
             Sehingga y* didefinisikan sebagai titik tengah antara nilai crisp terkecil (m) dan
             nilai crisp terbesar (M) :
 """)
+elif option == 'Fuzzy Mamdani (File)':
+    try:
+        st.info('Format file CSV harus mengikuti urutan columns seperti dibawah ini :')
+        temp = ff.exploredata('template.csv')
+        st.write(temp)
+
+        data_file = st.file_uploader("Upload CSV", type=['csv'])
+        data = ff.exploredata(data_file.name)
+        st.write("Data yang digunakan")
+        st.write(data)
+        hasilfuzz = []
+        if(data['himpunanvar1'][3] > data['himpunanvar1'][1]):
+            namamin = data['himpunanvar1'][0]
+            namamax = data['himpunanvar1'][2]
+            nilaifuzzymin = (pd.to_numeric(data['himpunanvar1'][3]) - pd.to_numeric(data['input'][0])) / \
+                (pd.to_numeric(data['himpunanvar1'][3]) -
+                 pd.to_numeric(data['himpunanvar1'][1]))
+            nilaifuzzymax = (pd.to_numeric(data['input'][0]) - pd.to_numeric(data['himpunanvar1'][1])) / (
+                pd.to_numeric(data['himpunanvar1'][3]) - pd.to_numeric(data['himpunanvar1'][1]))
+        else:
+            namamin = data['himpunanvar1'][2]
+            namamax = data['himpunanvar1'][0]
+            nilaifuzzymin = (pd.to_numeric(data['himpunanvar1'][1]) - pd.to_numeric(data['input'][0])) / \
+                (pd.to_numeric(data['himpunanvar1'][1]) -
+                 pd.to_numeric(data['himpunanvar1'][3]))
+            nilaifuzzymax = (pd.to_numeric(data['input'][0]) - pd.to_numeric(data['himpunanvar1'][1])) / (
+                pd.to_numeric(data['himpunanvar1'][1]) - pd.to_numeric(data['himpunanvar1'][3]))
+        hasilfuzz.append([namamin, nilaifuzzymin, namamax, nilaifuzzymax])
+
+        hasilfuzz2 = []
+        if(data['himpunanvar2'][3] > data['himpunanvar2'][1]):
+            namamin = data['himpunanvar2'][0]
+            namamax = data['himpunanvar2'][2]
+            nilaifuzzymin = (pd.to_numeric(data['himpunanvar2'][3]) - pd.to_numeric(data['input'][1])) / \
+                (pd.to_numeric(data['himpunanvar2'][3]) -
+                 pd.to_numeric(data['himpunanvar2'][1]))
+            nilaifuzzymax = (pd.to_numeric(data['input'][1]) - pd.to_numeric(data['himpunanvar2'][1])) / (
+                pd.to_numeric(data['himpunanvar2'][3]) - pd.to_numeric(data['himpunanvar2'][1]))
+        else:
+            namamin = data['himpunanvar2'][2]
+            namamax = data['himpunanvar2'][0]
+            nilaifuzzymin = (pd.to_numeric(data['himpunanvar2'][1]) - pd.to_numeric(data['input'][1])) / \
+                (pd.to_numeric(data['himpunanvar2'][1]) -
+                 pd.to_numeric(data['himpunanvar2'][3]))
+            nilaifuzzymax = (pd.to_numeric(data['input'][1]) - pd.to_numeric(data['himpunanvar2'][1])) / (
+                pd.to_numeric(data['himpunanvar2'][1]) - pd.to_numeric(data['himpunanvar2'][3]))
+        hasilfuzz2.append([namamin, nilaifuzzymin, namamax, nilaifuzzymax])
+
+        st.write('Hasil Fuzzyfikasi')
+        co1, co2 = st.beta_columns(2)
+        co1.info('Variabel ke-1')
+        co1.info(str(hasilfuzz[0][0]) + ' : '+str(hasilfuzz[0][1]))
+        co1.info(str(hasilfuzz[0][2]) + ' : '+str(hasilfuzz[0][3]))
+
+        co2.info('Variabel ke-2')
+        co2.info(str(hasilfuzz2[0][0]) + ' :'+str(hasilfuzz2[0][1]))
+        co2.info(str(hasilfuzz2[0][2]) + ' :'+str(hasilfuzz2[0][3]))
+
+        # var1
+        implivar1 = []
+        for i in range(4):
+            if data['r'+str(i+1)][0] == hasilfuzz[0][0]:
+                im = hasilfuzz[0][1]
+            else:
+                im = hasilfuzz[0][3]
+            implivar1.append([im, data['r'+str(i+1)][0]])
+        datavar1 = pd.DataFrame(implivar1)
+        st.table(datavar1)
+
+        # var2
+        st.write(
+            'Variabel ke-2')
+        implivar2 = []
+        for i in range(4):
+            if data['r'+str(i+1)][1] == hasilfuzz2[0][0]:
+                im = hasilfuzz2[0][1]
+            else:
+                im = hasilfuzz2[0][3]
+            implivar2.append([im, data['r'+str(i+1)][1]])
+        datavar2 = pd.DataFrame(implivar2)
+        st.table(datavar2)
+
+        # hasil implikasi
+        st.write(
+            'Hasil Implikasi')
+        hasilimpli = []
+        for k in range(len(implivar1)):
+            impli = min(implivar1[k][0], implivar2[k][0])
+            hasilimpli.append([impli, data['r'+str(k+1)][2]])
+
+        # ex4.write(hasilimpli)
+        hasilnya = pd.DataFrame(hasilimpli)
+        st.table(hasilnya)
+
+        st.write('Defuzzifikasi')
+        st.write(
+            'Mencari nilai terbesar dari keputusan rule berdasarkan nilai implikasi yang sudah di dapat')
+
+        max1 = []
+        max2 = []
+        for i in range(len(hasilimpli)):
+            if(data['himpunanvar3'][0] == hasilimpli[i][1]):
+                buatmax = hasilimpli[i][0]
+            else:
+                buatmax = 0
+            max1.append(buatmax)
+        for i in range(len(hasilimpli)):
+            if(data['himpunanvar3'][2] == hasilimpli[i][1]):
+                buatmax = hasilimpli[i][0]
+            else:
+                buatmax = 0
+            max2.append(buatmax)
+
+        st.write('1. '+str(data['himpunanvar3'][0])+' : '+str(max(max1)))
+        st.write('2. '+str(data['himpunanvar3'][2]) + ' : '+str(max(max2)))
+
+        col1, col2 = st.beta_columns(2)
+        b1 = col1.number_input(
+            'Masukkan berapa banyak random number (Var 1) : ', 5, 200, 5)
+        b2 = col2.number_input(
+            'Masukkan berapa banyak random number (Var 2) : ', 5, 200, 5)
+
+        if(data['himpunanvar3'][3] > data['himpunanvar3'][1]):
+            rand = ff.randnum(b1, pd.to_numeric(
+                data['himpunanvar3'][1]), pd.to_numeric(data['himpunanvar3'][3]))
+            rand2 = ff.randnum(b2, pd.to_numeric(
+                data['himpunanvar3'][1]), pd.to_numeric(data['himpunanvar3'][3]))
+        else:
+            rand = ff.randnum(b1, pd.to_numeric(
+                data['himpunanvar3'][3]), pd.to_numeric(data['himpunanvar3'][1]))
+            rand2 = ff.randnum(b2, pd.to_numeric(
+                data['himpunanvar3'][3]), pd.to_numeric(data['himpunanvar3'][1]))
+
+        datat = {str(data['himpunanvar3'][0]): rand,
+                 str(data['himpunanvar3'][2]): rand2, }
+
+        datadf = pd.DataFrame(datat)
+
+        st.write(datadf)
+        maxi1 = max(max1)
+        maxi2 = max(max2)
+        randvar1 = ff.jumlah(rand)
+        randvar2 = ff.jumlah(rand2)
+
+        defuzz = round(((randvar1*maxi1)+(randvar2*maxi2)) /
+                       ((maxi1*b1)+(maxi2*b2)), 3)
+        st.write('Nilai Defuzzifikasi : '+str(defuzz))
+        st.write('Jadi '+str(data['namavar'][2]) +
+                 ' yang diperlukan adalah sebesar '+str(round(defuzz))+' '+data['satuan'][2])
+    except:
+        st.write('')
 st.markdown(
     '<style>body{background-color: #AADBE1;}</style>', unsafe_allow_html=True)
